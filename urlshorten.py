@@ -158,7 +158,7 @@ class ShortUrlList(Resource):
 			return {'status': 200, 'message': number_to_text(urlid)}
 
 api.add_resource(ShortUrl, '/urls/<string:url_id>')
-api.add_resource(ShortUrlList, '/urls')
+api.add_resource(ShortUrlList, '/urls/')
 
 if __name__ == '__main__':
 	app.run(debug=True)
