@@ -6,8 +6,12 @@ COPY . /app
 
 WORKDIR /app
 
-RUN curl http://uwsgi.it/install | bash -s default /tmp/uwsgi && mkdir /tmp/socket && pip install -r requirements.txt 
+RUN pip install uwsgi && pip install -r requirements.txt
+
+VOLUME ["/app/socket/"]
 
 ENV UWSGI_MOUNTPOINT /
 
-CMD /tmp/uwsgi -s /tmp/socket/uwsgi.sock --manage-script-name --mount $UWSGI_MOUNTPOINT=urlshorten:app
+ENV UWSGI_APP app:app
+
+CMD /usr/local/bin/uwsgi -s /app/socket/uwsgi.sock --manage-script-name --mount $UWSGI_MOUNTPOINT=$UWSGI_APP
