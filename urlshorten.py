@@ -97,6 +97,7 @@ def add_secret_url(url):
 	while SecretShortenedUrl.query.filter(SecretShortenedUrl.id == urlid).first() or urlid == "":
 		if tries > 10:
 			length += 1
+			tries = 0
 		urlid = '+' + ''.join([random.choice(_text) for _ in range(length)])
 		tries += 1
 	
