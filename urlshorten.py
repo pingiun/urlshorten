@@ -62,8 +62,8 @@ def limit(f):
     def wrapper(*args, **kwargs):
         remaining, reset = check_limit(request.remote_addr)
         if remaining <= 0:
-            return api.make_response(({'status': 429, 
-                'message': 'API limit reached'}, 429))
+            return {'status': 429, 
+                'message': 'API limit reached'}, 429
         resp = api.make_response(*f(*args, **kwargs))
         resp.headers['RateLimit-Limit'] = os.environ["GLOBAL_RATELIMIT"]
         resp.headers['RateLimit-Remaining'] = remaining
