@@ -62,8 +62,8 @@ def limit(f):
     def wrapper(*args, **kwargs):
         remaining, reset = check_limit(request.remote_addr)
         if remaining <= 0:
-            return {'status': 429, 
-                'message': 'API limit reached'}, 429
+            return api.make_response(({'status': 429, 
+                'message': 'API limit reached'}, 429))
         resp = api.make_response(*f(*args, **kwargs))
         resp.headers['RateLimit-Limit'] = os.environ["GLOBAL_RATELIMIT"]
         resp.headers['RateLimit-Remaining'] = remaining
@@ -151,7 +151,7 @@ class ShortUrl(Resource):
     @limit
     def get(self, url_id):
         try:
-            return {'status': 200, 'message': get_url(url_id)}
+            return {'status': 200, 'message': get_url(url_id)}, 200
         except:
             return {'status': 404, 'message': 'Not Found'}, 404
 
@@ -162,9 +162,9 @@ class ShortUrlList(Resource):
             urls = ShortenedUrl.query.all()
             allurls = {number_to_text(url.id): url.url for url in urls}
         except Exception as e:
-            return {'status': 500, 'message': str(e)}, 500
+            return {'uh': 500, 'message': str(e)}, 500
         else:
-            return {'status': 200, 'message': allurls}
+            return {'status': 200, 'message': allurls}, 200
 
     @limit
     def post(self):
@@ -180,7 +180,7 @@ class ShortUrlList(Resource):
             except Exception as e:
                 return {'status': 500, 'message': str(e)}, 500
             else:
-                return {'status': 200, 'message': urlid}
+                return {'status': 200, 'message': urlid}, 200
             
         try:
             urlid = -1
@@ -189,7 +189,7 @@ class ShortUrlList(Resource):
         except Exception as e:
             return {'status': 500, 'message': str(e)}, 500
         else:
-            return {'status': 200, 'message': number_to_text(urlid)}
+            return {'status': 200, 'message': number_to_text(urlid)}, 200
 
 api.add_resource(ShortUrl, '/urls/<string:url_id>')
 api.add_resource(ShortUrlList, '/urls/')
