@@ -56,16 +56,24 @@ def check_limit(token):
     else:
         limiter_dict[token] = Queue()
 
-    limiter_dict[token].put_nowait(time.time() * 60 * 60)
+    if len(limiter_dict[token].queue) <= 20:
+        limiter_dict[token].put_nowait(int(time.time() + 60 * 60))
     return int(os.environ["GLOBAL_RATELIMIT"]) - len(limiter_dict[token].queue), limiter_dict[token].queue[0]
 
 def limit(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
         remaining, reset = check_limit(request.remote_addr)
-        if remaining <= 0:
-            return {'status': 429, 
-                'message': 'API limit reached'}, 429
+        if remaining < 0:
+            return ({
+                        'status': 429, 
+                        'message': 'API limit reached'
+                    }, 429, 
+                    {
+                        'RateLimit-Limit': os.environ["GLOBAL_RATELIMIT"],
+                        'RateLimit-Remaining': remaining,
+                        'RateLimit-Reset': reset
+                    })
         resp = api.make_response(*f(*args, **kwargs))
         resp.headers['RateLimit-Limit'] = os.environ["GLOBAL_RATELIMIT"]
         resp.headers['RateLimit-Remaining'] = remaining
