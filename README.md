@@ -6,6 +6,11 @@ urlshorten is a simple Flask app, so it can run anywhere you have python.
 I also made a Dockerfile and docker-compose.yml if you like containers.
 Just run `docker-compose up` if you want to try that out.
 
+If you are testing, you can use requirements-testing.txt because it doesn't
+include psycopg2. Then just run `python3 urlshorten.py`, or
+`FLASK_APP=urlshorten.py flask run`. Be sure to supply the environment
+variables DB_URL and GLOBAL_RATELIMIT as well.
+
 ## API
 
 ### POST /urls/
