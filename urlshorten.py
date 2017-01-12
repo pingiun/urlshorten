@@ -18,9 +18,11 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 app = Flask(__name__)
 api = Api(app)
 
-parser = reqparse.RequestParser()
-parser.add_argument('url', required=True, help="The long url to shorten")
-parser.add_argument('secret', type=bool, help="Make a secret URL")
+postparser = reqparse.RequestParser()
+postparser.add_argument('url', required=True, help="The long url to shorten")
+postparser.add_argument('secret', type=bool, help="Make a secret URL")
+getparser = reqparse.RequestParser()
+getparser.add_argument('page', type=int, default=1, help="Page of the result")
 
 limiter_dict = {}
 
@@ -159,7 +161,10 @@ class ShortUrlList(Resource):
     @limit
     def get(self):
         try:
-            urls = ShortenedUrl.query.all()
+            args = getparser.parse_args()
+            page = args['page'] - 1
+            print("page: {}".format(page))
+            urls = ShortenedUrl.query.limit(25).offset(25 * page)
             allurls = {number_to_text(url.id): url.url for url in urls}
         except Exception as e:
             return {'uh': 500, 'message': str(e)}, 500
@@ -168,7 +173,7 @@ class ShortUrlList(Resource):
 
     @limit
     def post(self):
-        args = parser.parse_args()
+        args = postparser.parse_args()
         if not args['url']:
             return {'status': 400, 'message': 'Use the argument `url`'}, 400
         if not valid_url(args['url']):

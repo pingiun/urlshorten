@@ -26,6 +26,9 @@ Returns a json blob that looks like this, where 's' the shortened url:
 - 500 'Some error message': There was an internal error
 
 ### GET /urls/
+#### Parameters
+- `page=1`: The page for the result. (Pages are 25 urls long.)
+
 Returns a list of shortened urls (excluding secret urls) that looks like this:
 ```json
 {
