@@ -51,7 +51,7 @@ def valid_url(url):
 
 def check_limit(token):
     if token in limiter_dict:
-        while limiter_dict[token].queue[0] < time.time():
+        while len(limiter_dict[token].queue) > 0 and limiter_dict[token].queue[0] < time.time():
             limiter_dict[token].get_nowait()
     else:
         limiter_dict[token] = Queue()
