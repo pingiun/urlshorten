@@ -172,7 +172,7 @@ class ShortUrlList(Resource):
             args = getparser.parse_args()
             page = args['page'] - 1
             print("page: {}".format(page))
-            urls = ShortenedUrl.query.limit(25).offset(25 * page)
+            urls = ShortenedUrl.query.limit(25).offset(25 * page).order_by(ShortenedUrl.id.desc())
             allurls = {number_to_text(url.id): url.url for url in urls}
         except Exception as e:
             return {'uh': 500, 'message': str(e)}, 500
