@@ -146,6 +146,10 @@ def add_secret_url(url):
     db_session.commit()
     return urlid
 
+@app.route('/')
+def index():
+    return app.send_static_file('index.html')
+
 @app.route('/<string:url_id>')
 def redirect_short_url(url_id):
     try:

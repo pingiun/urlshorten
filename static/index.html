@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+<head>
+<title>JEL.bz url shortener</title>
+</head>
+<body>
+<h1>JEL.bz url shortener</h1>
+<div id="error"></div>
+<form action="/urls/" method="POST" id="urlform">
+<label for="url">Long URL:</label>
+<input type="text" name="url" id="url"><br>
+<input type="checkbox" name="secret" id="secret">
+<label for="secret">Make the url secret (doesn't show up on <a href="/urls/">/urls/</a>)</label><br>
+<input type="submit">
+</form>
+<div id="output"></div>
+<p>Checkout the source on <a href="https://github.com/pingiun/urlshorten">github</a></p>
+<script>
+var form = document.getElementById('urlform');
+form.onsubmit = function (event) {
+	event.preventDefault();
+	var http = new XMLHttpRequest();
+	var url = "/urls/";
+	var params = "url=" + escape(document.getElementById('url').value);
+	if (document.getElementById('secret').checked) {
+		params += "&secret=true"
+	}
+	
+	http.open("POST", url, true);
+
+	//Send the proper header information along with the request
+	http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+	http.onreadystatechange = function() {//Call a function when the state changes.
+	    if(http.readyState == 4 && http.status == 200) {
+	        document.getElementById('output').innerHTML = "Your short url: <input type=\"text\" disabled value=\"https://jel.bz/" + JSON.parse(http.responseText).message + "\">";
+	    } else if (http.readyState == 4) {
+	    	document.getElementById('error').innerHTML = http.responseText;
+	    }
+	}
+	http.send(params);
+}
+</script>
+</body>
+</html>
